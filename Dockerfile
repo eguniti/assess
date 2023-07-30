@@ -1,22 +1,18 @@
-# our base image
-FROM alpine:3.5
-
-# Install python and pip
-RUN apk add --update py2-pip
-
-# install Python modules needed by the Python app
-COPY requirements.txt /usr/src/app/
-RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
-
-# copy files required for the app to run
-COPY app.py /usr/src/app/
-COPY templates/index.html /usr/src/app/templates/
-
-# tell the port number the container should expose
-EXPOSE 5000
-
-# run the application
-CMD ["python", "/usr/src/app/app.py"]
+FROM  centos:latest
+MAINTAINER nitin.u.gupta@gmail.com
+RUN cd /etc/yum.repos.d/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum install -y httpd \
+ zip\
+ unzip
+ADD https://www.free-css.com/assets/files/free-css-templates/download/page254/photogenic.zip /var/www/html/
+WORKDIR /var/www/html/
+RUN unzip photogenic.zip
+RUN cp -rvf photogenic/* .
+RUN rm -rf photogenic photogenic.zip
+CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+EXPOSE 80 22
 
 # FROM  centos:latest
 # MAINTAINER vikashashoke@gmail.com
